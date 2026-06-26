@@ -18,8 +18,11 @@ async def lifespan(app: FastAPI):
         print("Starting fresh DB (no saved state found)")
     app.state.db = db
     yield
-    db.save()
-    print(f"DB saved to {PERSIST_DIR}")
+    try:
+        db.save()
+        print(f"DB saved to {PERSIST_DIR}")
+    except Exception:
+        pass  # Vercel serverless has no writable disk — skip silently
 
 
 app = FastAPI(
